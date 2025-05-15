@@ -1,0 +1,5 @@
+ambiente-johann/
+__pycache__/
+*.pyc
+*.pyo
+.env
