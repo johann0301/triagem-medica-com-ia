@@ -1,15 +1,17 @@
 import streamlit as st
 import pandas as pd
 import openai
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
 # Load API key
 load_dotenv()
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 # Load spreadsheet
-xls = pd.ExcelFile("Green West Dataset.xlsx")
+xls = pd.ExcelFile("Banco_Triagem_Medica_Sintomas.xlsx")
 sheet_names = xls.sheet_names
 sheet = st.selectbox("Choose a sheet", sheet_names)
 df = xls.parse(sheet)
@@ -62,12 +64,21 @@ questão: {user_question}
 responda de maneira profissional e preocupado acima de tudo em como o paciente vai estar:"""
 
         # Atualizado para a nova API
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-        )
-        answer = response.choices[0].message.content
-        st.markdown(f"resposta:** {answer}")
+        try:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+            )
+            answer = response.choices[0].message.content
+            st.markdown(f"resposta:** {answer}")
+        except openai.RateLimitError:
+            st.error("⚠️ Sua cota da API acabou, verifique seu plano e billing.")
+            st.info("💡 Veja seu uso aqui: https://platform.openai.com/account/usage")
+        except openai.NotFoundError:
+            st.error("❌ Modelo não encontrado ou sem acesso.")
+        except Exception as e:
+            st.error(f"Erro inesperado: {e}")
+
     else:
         st.warning("Digite aqui.")
