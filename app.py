@@ -63,22 +63,13 @@ IA: Com base nas informações fornecidas, sua situação é classificada como u
 questão: {user_question}
 responda de maneira profissional e preocupado acima de tudo em como o paciente vai estar:"""
 
-        # Atualizado para a nova API
-        try:
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3,
-            )
-            answer = response.choices[0].message.content
-            st.markdown(f"resposta:** {answer}")
-        except openai.RateLimitError:
-            st.error("⚠️ Sua cota da API acabou, verifique seu plano e billing.")
-            st.info("💡 Veja seu uso aqui: https://platform.openai.com/account/usage")
-        except openai.NotFoundError:
-            st.error("❌ Modelo não encontrado ou sem acesso.")
-        except Exception as e:
-            st.error(f"Erro inesperado: {e}")
-
+# Atualizado para a nova API
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+        )
+        answer = response.choices[0].message.content
+        st.markdown(f"resposta:** {answer}")
     else:
         st.warning("Digite aqui.")
